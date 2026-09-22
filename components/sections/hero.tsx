@@ -1,13 +1,26 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Phone, MessageCircle, MapPin } from "lucide-react";
+import { Phone, MessageCircle, MapPin, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { businessInfo } from "@/constants/business";
 
 export function Hero() {
   const whatsappUrl = `https://wa.me/${businessInfo.whatsapp}?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20Green%20Land%20Super%20Market`;
+
+  // Forward the ?phone= query param (e.g. from a WhatsApp "Open our store" tap)
+  // so the customer's identity carries over to the storefront.
+  const [storefrontUrl, setStorefrontUrl] = useState(businessInfo.storefrontUrl);
+  useEffect(() => {
+    const phone = new URLSearchParams(window.location.search).get("phone");
+    setStorefrontUrl(
+      phone
+        ? `${businessInfo.storefrontUrl}/?phone=${encodeURIComponent(phone)}`
+        : businessInfo.storefrontUrl
+    );
+  }, []);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center bg-surface overflow-hidden">
@@ -54,8 +67,15 @@ export function Hero() {
               transition={{ delay: 0.65, duration: 0.6 }}
               className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start"
             >
-              <a href={`tel:${businessInfo.phone}`}>
+              <a href={storefrontUrl}>
                 <Button size="lg" variant="default" className="gap-2 shadow-md hover:shadow-lg">
+                  <ShoppingCart className="w-5 h-5" />
+                  Start Shopping
+                </Button>
+              </a>
+
+              <a href={`tel:${businessInfo.phone}`}>
+                <Button size="lg" variant="outline" className="gap-2 shadow-md hover:shadow-lg">
                   <Phone className="w-5 h-5" />
                   Call Us
                 </Button>

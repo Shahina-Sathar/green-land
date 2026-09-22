@@ -18,4 +18,6 @@ export const businessInfo: BusinessInfo = {
   },
   googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913!2d75.8921465!3d11.3331272!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba65d3108e4f0a3%3A0xc2c73413adf1d00d!2sGreen+Land+Super+Market!5e0!3m2!1sen!2sin!4v1690000000000",
   googleMapsUrl: "https://www.google.com/maps/place/Green+Land+Super+Market/@11.3331272,75.8921465,17z",
+  // The customer-facing storefront (browse → cart → checkout).
+  storefrontUrl: "https://cart.greenland.millx.in",
 };

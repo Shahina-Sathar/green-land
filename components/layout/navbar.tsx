@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, PhoneCall, MessageCircle } from "lucide-react";
+import { Menu, X, PhoneCall, MessageCircle, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { navigation } from "@/constants/navigation";
@@ -11,6 +11,17 @@ import { businessInfo } from "@/constants/business";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Forward the ?phone= query param to the storefront (same as the hero).
+  const [storefrontUrl, setStorefrontUrl] = useState(businessInfo.storefrontUrl);
+  useEffect(() => {
+    const phone = new URLSearchParams(window.location.search).get("phone");
+    setStorefrontUrl(
+      phone
+        ? `${businessInfo.storefrontUrl}/?phone=${encodeURIComponent(phone)}`
+        : businessInfo.storefrontUrl
+    );
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -59,6 +70,13 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a href={storefrontUrl}>
+            <Button variant="default" size="default" className="gap-2">
+              <ShoppingCart className="w-4 h-4" />
+              <span className="hidden sm:inline">Start Shopping</span>
+            </Button>
+          </a>
+
           <a href={`tel:${businessInfo.phone}`} className="hidden sm:inline-flex">
             <Button variant="outline" size="default" className="gap-2">
               <PhoneCall className="w-4 h-4" />
@@ -97,8 +115,14 @@ export function Navbar() {
               </a>
             ))}
             <div className="pt-3 border-t border-neutral-100">
+              <a href={storefrontUrl} className="block w-full">
+                <Button variant="default" size="default" className="w-full justify-center gap-2 mb-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  Start Shopping
+                </Button>
+              </a>
               <a href={`tel:${businessInfo.phone}`} className="block w-full">
-                <Button variant="outline" size="default" className="w-full justify-center gap-2 mb-2">
+                <Button variant="outline" size="default" className="w-full justify-center gap-2">
                   <PhoneCall className="w-4 h-4" />
                   Call Us
                 </Button>

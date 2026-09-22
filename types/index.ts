@@ -53,4 +53,5 @@ export interface BusinessInfo {
   };
   googleMapsEmbedUrl: string;
   googleMapsUrl: string;
+  storefrontUrl: string;
 }
