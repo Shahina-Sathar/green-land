@@ -1,151 +1,162 @@
-"use client";
+import { ArrowRight, Leaf, MapPin, Phone, ShieldCheck, Truck } from "lucide-react";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Phone, MessageCircle, MapPin, ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ShopLink } from "@/components/ui/shop-link";
 import { businessInfo } from "@/constants/business";
+import { mapsDirectionsHref, telHref } from "@/lib/contact";
+import { formatINR } from "@/lib/format";
+import { formatHour, isOpenNow } from "@/lib/hours";
+import type { Product, StorefrontStore } from "@/lib/store-api";
 
-export function Hero() {
-  const whatsappUrl = `https://wa.me/${businessInfo.whatsapp}?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20Green%20Land%20Super%20Market`;
+/** Positions for the floating product cards on large screens. */
+const FLOAT_POS = [
+  "left-0 top-0 z-10 [--r:-4deg]",
+  "right-0 top-16 z-20 [--r:5deg] [animation-delay:-2s]",
+  "left-[calc(50%-6rem)] bottom-0 z-30 [--r:2deg] [animation-delay:-4s]",
+];
 
-  // Forward the ?phone= query param (e.g. from a WhatsApp "Open our store" tap)
-  // so the customer's identity carries over to the storefront.
-  const [storefrontUrl, setStorefrontUrl] = useState(businessInfo.storefrontUrl);
-  useEffect(() => {
-    const phone = new URLSearchParams(window.location.search).get("phone");
-    setStorefrontUrl(
-      phone
-        ? `${businessInfo.storefrontUrl}/?phone=${encodeURIComponent(phone)}`
-        : businessInfo.storefrontUrl
-    );
-  }, []);
+export function Hero({
+  store,
+  showcase,
+}: {
+  store: StorefrontStore | null;
+  /** Real products with the shop's own photos. */
+  showcase: Product[];
+}) {
+  const open = store ? isOpenNow(store.open_hour, store.close_hour) : null;
+  const tel = telHref(store);
+  const directions = mapsDirectionsHref(store);
+  const radius = store?.delivery_radius_km ? Number(store.delivery_radius_km) : null;
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center bg-surface overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-50/80 via-white to-surface/60" />
+    <section
+      id="home"
+      aria-labelledby="hero-title"
+      className="relative isolate overflow-hidden bg-gradient-to-br from-brand-950 via-brand-800 to-brand-600 text-white"
+    >
+      {/* Decorative background */}
+      <div aria-hidden className="bg-grain pointer-events-none absolute inset-0 -z-10 opacity-70" />
+      <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 -z-10 h-96 w-96 rounded-full bg-brand-400/30 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-20 -z-10 h-96 w-96 rounded-full bg-accent-400/20 blur-3xl" />
+      <svg
+        aria-hidden
+        viewBox="0 0 200 200"
+        className="pointer-events-none absolute -bottom-10 right-[-60px] -z-10 h-80 w-80 text-brand-400/10 lg:right-[38%]"
+      >
+        <path
+          fill="currentColor"
+          d="M100 10c50 20 80 60 80 110-40 10-90 0-120-30C40 70 50 30 100 10Zm-10 50c-5 30 0 70 30 110"
+        />
+      </svg>
 
-      <div className="container-max relative z-10 px-4 sm:px-6 lg:px-8 py-32 md:py-40">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-center lg:text-left"
+      <div className="page grid items-center gap-10 pb-12 pt-28 sm:pb-16 sm:pt-32 lg:grid-cols-[1.15fr_1fr] lg:pb-24">
+        <div className="min-w-0 animate-fade-in">
+          <p className="inline-flex items-center gap-2 rounded-pill bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-100 ring-1 ring-white/15 backdrop-blur">
+            <Leaf className="h-3.5 w-3.5 text-brand-300" aria-hidden /> Padanilam · Kozhikode
+          </p>
+
+          <h1
+            id="hero-title"
+            className="mt-5 font-display text-[2.15rem] font-semibold leading-[1.05] tracking-tight text-white min-[400px]:text-[2.4rem] sm:text-5xl lg:text-6xl"
           >
-            <motion.span
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-block px-4 py-1.5 bg-brand-100 text-brand-700 text-sm font-medium rounded-full mb-6"
-            >
-              {businessInfo.tagline}
-            </motion.span>
+            Greenland Supermarket
+            <span className="mt-1 block text-gradient">in Padanilam</span>
+          </h1>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.6 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-neutral-900 leading-tight tracking-tight"
-            >
-              {businessInfo.name}
-            </motion.h1>
+          <p className="mt-4 text-lg font-semibold text-accent-300 sm:text-xl">
+            {store?.tagline || businessInfo.tagline}
+          </p>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-brand-50/85">
+            {businessInfo.description}
+          </p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="mt-6 text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-xl mx-auto lg:mx-0"
-            >
-              {businessInfo.description}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65, duration: 0.6 }}
-              className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start"
-            >
-              <a href={storefrontUrl}>
-                <Button size="lg" variant="default" className="gap-2 shadow-md hover:shadow-lg">
-                  <ShoppingCart className="w-5 h-5" />
-                  Start Shopping
-                </Button>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <ShopLink className="btn-accent px-7 text-base">
+              Start shopping <ArrowRight className="h-4 w-4" aria-hidden />
+            </ShopLink>
+            {tel && (
+              <a href={tel} className="btn-ghost-light px-6 text-base">
+                <Phone className="h-4 w-4" aria-hidden /> Call us
               </a>
-
-              <a href={`tel:${businessInfo.phone}`}>
-                <Button size="lg" variant="outline" className="gap-2 shadow-md hover:shadow-lg">
-                  <Phone className="w-5 h-5" />
-                  Call Us
-                </Button>
-              </a>
-
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" variant="outline" className="gap-2">
-                  <MessageCircle className="w-5 h-5" />
-                  WhatsApp
-                </Button>
-              </a>
-
+            )}
+            {directions && (
               <a
-                href={businessInfo.googleMapsUrl}
+                href={directions}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="btn-ghost-light px-6 text-base"
               >
-                <Button size="lg" variant="ghost" className="gap-2">
-                  <MapPin className="w-5 h-5" />
-                  Get Directions
-                </Button>
+                <MapPin className="h-4 w-4" aria-hidden /> Directions
               </a>
-            </motion.div>
-          </motion.div>
+            )}
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="hidden lg:block"
-          >
-            <motion.div
-              animate={{ y: [0, -15, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative"
-            >
-              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
-                <Image
-                  src="https://images.unsplash.com/photo-1543168256-418811576931?w=800&h=600&fit=crop"
-                  alt="Green Land Super Market"
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 1024px) 0px, 600px"
+          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-brand-50/90">
+            {open !== null && store && (
+              <li className="inline-flex items-center gap-2">
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    open ? "bg-brand-300 shadow-[0_0_0_4px_rgb(157_203_116/0.3)]" : "bg-accent-400"
+                  }`}
+                  aria-hidden
                 />
-              </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-xl" />
-              <div className="absolute -top-4 -left-4 w-32 h-32 bg-brand-200/30 rounded-full blur-xl" />
-            </motion.div>
-
-            <div className="flex justify-center gap-4 mt-8">
-              {["🥬", "🍎", "🧀", "🥛"].map((emoji, i) => (
-                <motion.span
-                  key={i}
-                  className="text-3xl"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  {emoji}
-                </motion.span>
-              ))}
-            </div>
-          </motion.div>
+                {open
+                  ? `Open now · until ${formatHour(store.close_hour)}`
+                  : `Closed · opens ${formatHour(store.open_hour)}`}
+              </li>
+            )}
+            {radius && (
+              <li className="inline-flex items-center gap-2">
+                <Truck className="h-4 w-4 text-brand-300" aria-hidden /> Delivery within {radius} km
+              </li>
+            )}
+            <li className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-brand-300" aria-hidden /> Pay with UPI
+            </li>
+          </ul>
         </div>
+
+        {/* Showcase: real products from the shop's own shelves */}
+        {showcase.length >= 3 && (
+          <div aria-hidden className="relative hidden h-[460px] lg:block">
+            <div className="absolute inset-8 rounded-[3rem] bg-white/5 ring-1 ring-white/10 backdrop-blur-sm" />
+            <div className="absolute left-1/2 top-1/2 flex h-56 w-56 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-brand-300/40 to-accent-300/30 blur-2xl" />
+            {showcase.slice(0, 3).map((p, i) => (
+              <div
+                key={p.id}
+                className={`absolute w-48 animate-float rounded-3xl bg-white p-3 text-ink shadow-lift ${FLOAT_POS[i]}`}
+              >
+                <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-brand-50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.image_url!}
+                    alt=""
+                    width={192}
+                    height={144}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <p className="mt-2 truncate text-sm font-semibold">{p.name}</p>
+                <p className="text-base font-extrabold text-brand-700">
+                  {formatINR(
+                    p.is_clearance && p.clearance_price != null ? p.clearance_price : p.selling_price
+                  )}
+                  <span className="ml-1 text-xs font-semibold text-slate-500">/{p.unit_symbol}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* soft wave into the page */}
+      <svg
+        aria-hidden
+        viewBox="0 0 1440 60"
+        preserveAspectRatio="none"
+        className="block h-8 w-full text-cream sm:h-12"
+      >
+        <path fill="currentColor" d="M0 60V30c240 30 480 30 720 0s480-30 720 0v30Z" />
+      </svg>
     </section>
   );
 }

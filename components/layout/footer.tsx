@@ -1,112 +1,122 @@
-import Link from "next/link";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Clock, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+
+import { ShopLink } from "@/components/ui/shop-link";
 import { businessInfo } from "@/constants/business";
 import { navigation } from "@/constants/navigation";
+import {
+  formatPhone,
+  mapsDirectionsHref,
+  storePhoneDigits,
+  telHref,
+  tidyAddress,
+  whatsappHref,
+} from "@/lib/contact";
+import { formatHoursRange } from "@/lib/hours";
+import type { StorefrontStore } from "@/lib/store-api";
 
-export function Footer() {
+export function Footer({ store }: { store: StorefrontStore | null }) {
+  const tel = telHref(store);
+  const wa = whatsappHref(store);
+  const directions = mapsDirectionsHref(store);
+  const address = tidyAddress(store?.address || businessInfo.address);
+  const socials = [
+    businessInfo.social.facebook && { label: "Facebook", href: businessInfo.social.facebook },
+    businessInfo.social.instagram && { label: "Instagram", href: businessInfo.social.instagram },
+  ].filter(Boolean) as Array<{ label: string; href: string }>;
+
+  const item = "flex items-start gap-2.5 text-sm text-brand-100/80";
+  const link = `${item} min-h-[32px] items-center transition hover:text-white`;
+
   return (
-    <footer className="bg-neutral-900 text-neutral-300">
-      <div className="container-max px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🛒</span>
-              <span className="text-xl font-bold text-white">
-                Green Land
-              </span>
-            </div>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              {businessInfo.tagline}. Fresh products, affordable prices, and friendly service for your family.
+    <footer className="bg-brand-950 text-brand-50">
+      <div className="page grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-white.png"
+            alt={businessInfo.name}
+            width={180}
+            height={48}
+            className="h-11 w-auto object-contain"
+          />
+          <p className="mt-3 text-sm font-semibold text-accent-300">
+            {store?.tagline || businessInfo.tagline}
+          </p>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-brand-100/70">
+            Order online and pay easily with UPI, or drop by the shop in Padanilam.
+          </p>
+          <ShopLink className="btn-accent mt-5">Start shopping</ShopLink>
+        </div>
+
+        <div className="grid content-start gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Explore</h2>
+          {navigation.map((nav) => (
+            <a key={nav.href} href={nav.href} className={link}>
+              {nav.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="grid content-start gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Store</h2>
+          {store && (
+            <p className={item}>
+              <Clock className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden />
+              {formatHoursRange(store.open_hour, store.close_hour)}
             </p>
-          </div>
+          )}
+          {address && (
+            <p className={item}>
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden />
+              {address}
+            </p>
+          )}
+          {directions && (
+            <a href={directions} target="_blank" rel="noopener noreferrer" className={link}>
+              <Navigation className="h-4 w-4 shrink-0 text-brand-300" aria-hidden /> Get directions
+            </a>
+          )}
+        </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              {navigation.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="text-sm text-neutral-400 hover:text-white transition-colors duration-200"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Contact
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 mt-0.5 text-brand-400 shrink-0" />
-                <span className="text-sm text-neutral-400">{businessInfo.address}</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-brand-400 shrink-0" />
-                <a href={`tel:${businessInfo.phone}`} className="text-sm text-neutral-400 hover:text-white transition-colors">
-                  {businessInfo.phone}
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-brand-400 shrink-0" />
-                <a href={`mailto:${businessInfo.email}`} className="text-sm text-neutral-400 hover:text-white transition-colors">
-                  {businessInfo.email}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Business Hours
-            </h3>
-            <ul className="space-y-2">
-              {businessInfo.hours.map((h) => (
-                <li key={h.day} className="flex items-start gap-3">
-                  <Clock className="w-4 h-4 mt-0.5 text-brand-400 shrink-0" />
-                  <div>
-                    <p className="text-sm text-neutral-300">{h.day}</p>
-                    <p className="text-sm text-neutral-500">{h.time}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="grid content-start gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Get in touch</h2>
+          {tel && (
+            <a href={tel} className={link}>
+              <Phone className="h-4 w-4 shrink-0 text-brand-300" aria-hidden />
+              {formatPhone(storePhoneDigits(store))}
+            </a>
+          )}
+          {wa && (
+            <a href={wa} target="_blank" rel="noopener noreferrer" className={link}>
+              <MessageCircle className="h-4 w-4 shrink-0 text-brand-300" aria-hidden /> Chat on WhatsApp
+            </a>
+          )}
+          {businessInfo.email && (
+            <a href={`mailto:${businessInfo.email}`} className={link}>
+              <Mail className="h-4 w-4 shrink-0 text-brand-300" aria-hidden /> {businessInfo.email}
+            </a>
+          )}
         </div>
       </div>
 
-      <div className="border-t border-neutral-800">
-        <div className="container-max px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-sm text-neutral-500">
-            &copy; {new Date().getFullYear()} {businessInfo.name}. All rights reserved.
+      <div className="border-t border-white/10">
+        <div className="page flex flex-col items-center justify-between gap-3 py-5 text-xs text-brand-100/60 sm:flex-row">
+          <p>
+            © {new Date().getFullYear()} {businessInfo.name}
           </p>
           <div className="flex items-center gap-4">
-            {businessInfo.social.facebook && (
+            {socials.map((s) => (
               <a
-                href={businessInfo.social.facebook}
+                key={s.label}
+                href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neutral-500 hover:text-white transition-colors text-sm"
+                className="transition hover:text-white"
               >
-                Facebook
+                {s.label}
               </a>
-            )}
-            {businessInfo.social.instagram && (
-              <a
-                href={businessInfo.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-neutral-500 hover:text-white transition-colors text-sm"
-              >
-                Instagram
-              </a>
-            )}
+            ))}
+            <span>Powered by GrocerOS</span>
           </div>
         </div>
       </div>

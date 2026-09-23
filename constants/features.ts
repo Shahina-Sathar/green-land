@@ -1,40 +1,32 @@
 import type { Feature } from "@/types";
 
+/**
+ * Only claims that are actually true of the shop and the online store. The
+ * delivery distance is replaced at render time with the real radius from the
+ * store record.
+ */
 export const features: Feature[] = [
   {
     icon: "leaf",
-    title: "Fresh Products",
+    title: "Everything in one shop",
     description:
-      "We source the freshest fruits, vegetables, and groceries daily to ensure you get only the best quality produce.",
+      "Fruit and vegetables, dairy, meat and fish, staples, snacks and household essentials — the whole week's list under one roof.",
   },
   {
-    icon: "piggy-bank",
-    title: "Affordable Prices",
+    icon: "smartphone",
+    title: "Order from your phone",
     description:
-      "Enjoy premium quality products at competitive prices. We believe great food should be accessible to everyone.",
+      "Browse the same shelves online, add what you need to the cart and place the order in a couple of minutes.",
   },
   {
-    icon: "shield-check",
-    title: "Trusted Brands",
-    description:
-      "We stock products from renowned brands you can trust, ensuring quality and safety in every purchase.",
+    icon: "truck",
+    title: "Delivered to your door",
+    description: "We deliver to homes near the store, so a full week's shopping does not need a trip.",
   },
   {
-    icon: "smile",
-    title: "Friendly Staff",
+    icon: "wallet",
+    title: "Pay easily with UPI",
     description:
-      "Our team is always ready to help with a warm smile. Your satisfaction is our top priority.",
-  },
-  {
-    icon: "clipboard-check",
-    title: "Quality Assurance",
-    description:
-      "Every product on our shelves goes through strict quality checks to meet our high standards.",
-  },
-  {
-    icon: "sparkles",
-    title: "Clean Shopping Experience",
-    description:
-      "Shop in a spotlessly clean, well-organized environment designed for your comfort and convenience.",
+      "Scan and pay with any UPI app when you order online. No card details to type in, and no cash to count out.",
   },
 ];

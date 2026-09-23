@@ -1,68 +1,72 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Menu, X, PhoneCall, MessageCircle, ShoppingCart } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { navigation } from "@/constants/navigation";
+import { Menu, MessageCircle, PhoneCall, ShoppingCart, X } from "lucide-react";
+
+import { ShopLink } from "@/components/ui/shop-link";
 import { businessInfo } from "@/constants/business";
+import { navigation } from "@/constants/navigation";
+import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Forward the ?phone= query param to the storefront (same as the hero).
-  const [storefrontUrl, setStorefrontUrl] = useState(businessInfo.storefrontUrl);
-  useEffect(() => {
-    const phone = new URLSearchParams(window.location.search).get("phone");
-    setStorefrontUrl(
-      phone
-        ? `${businessInfo.storefrontUrl}/?phone=${encodeURIComponent(phone)}`
-        : businessInfo.storefrontUrl
-    );
-  }, []);
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
-  const handleNavClick = () => setMobileOpen(false);
-
-  const whatsappUrl = `https://wa.me/${businessInfo.whatsapp}?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20Green%20Land%20Super%20Market`;
+  const whatsappUrl = `https://wa.me/${businessInfo.whatsapp}?text=${encodeURIComponent(
+    `Hi ${businessInfo.name}, I have a question.`
+  )}`;
 
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-neutral-100"
+        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        scrolled || mobileOpen
+          ? "border-b border-brand-900/10 bg-cream/95 shadow-card backdrop-blur-lg"
           : "bg-transparent"
       )}
     >
-      <nav className="container-max flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-        <Link
+      <nav className="page flex h-[var(--header-h)] items-center justify-between gap-3">
+        <a
           href="#home"
-          className="text-xl font-bold text-brand-800 flex items-center gap-2 shrink-0"
-          onClick={handleNavClick}
+          onClick={() => setMobileOpen(false)}
+          className="flex shrink-0 items-center rounded-lg"
+          aria-label={`${businessInfo.name} – home`}
         >
-          <span className="text-2xl">🛒</span>
-          <span className="hidden sm:inline">Green Land</span>
-        </Link>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={scrolled || mobileOpen ? "/brand/logo.webp" : "/brand/logo-white.png"}
+            alt={businessInfo.name}
+            width={160}
+            height={44}
+            className="h-10 w-auto object-contain sm:h-11"
+          />
+        </a>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden items-center gap-1 lg:flex">
           {navigation.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="px-3 py-2 text-sm font-medium text-neutral-600 hover:text-brand-700 rounded-lg hover:bg-brand-50 transition-colors duration-200"
+              className={cn(
+                "rounded-pill px-3 py-2 text-sm font-semibold transition-colors",
+                scrolled
+                  ? "text-slate-600 hover:bg-brand-50 hover:text-brand-800"
+                  : "text-white/90 hover:bg-white/10 hover:text-white"
+              )}
             >
               {item.label}
             </a>
@@ -70,62 +74,71 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <a href={storefrontUrl}>
-            <Button variant="default" size="default" className="gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              <span className="hidden sm:inline">Start Shopping</span>
-            </Button>
+          <a
+            href={`tel:${businessInfo.phone.replace(/\s/g, "")}`}
+            aria-label="Call the store"
+            className={cn(
+              "hidden h-11 w-11 items-center justify-center rounded-full transition sm:inline-flex",
+              scrolled
+                ? "text-brand-800 ring-1 ring-brand-900/10 hover:bg-brand-50"
+                : "text-white ring-1 ring-white/30 hover:bg-white/10"
+            )}
+          >
+            <PhoneCall className="h-5 w-5" aria-hidden />
           </a>
 
-          <a href={`tel:${businessInfo.phone}`} className="hidden sm:inline-flex">
-            <Button variant="outline" size="default" className="gap-2">
-              <PhoneCall className="w-4 h-4" />
-              <span className="hidden lg:inline">Call Us</span>
-            </Button>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Message us on WhatsApp"
+            className="hidden h-11 w-11 items-center justify-center rounded-full bg-[#0F7A3F] text-white transition hover:bg-[#0B6433] sm:inline-flex"
+          >
+            <MessageCircle className="h-5 w-5" aria-hidden />
           </a>
 
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="default" size="default" className="gap-2">
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">WhatsApp</span>
-            </Button>
-          </a>
+          <ShopLink className="btn-accent px-4 sm:px-6">
+            <ShoppingCart className="h-4 w-4" aria-hidden />
+            <span className="hidden sm:inline">Start shopping</span>
+            <span className="sm:hidden">Shop</span>
+          </ShopLink>
 
           <button
+            type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-neutral-700 hover:text-brand-700 rounded-lg hover:bg-brand-50 transition-colors"
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-full transition lg:hidden",
+              scrolled || mobileOpen
+                ? "text-brand-800 ring-1 ring-brand-900/10 hover:bg-brand-50"
+                : "text-white ring-1 ring-white/30 hover:bg-white/10"
+            )}
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </nav>
 
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-neutral-100 shadow-lg animate-fade-in">
-          <div className="px-4 py-3 space-y-1">
+        <div className="animate-fade-in border-t border-brand-900/10 bg-cream lg:hidden">
+          <div className="page space-y-1 py-3">
             {navigation.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={handleNavClick}
-                className="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-brand-700 hover:bg-brand-50 rounded-xl transition-colors"
+                onClick={() => setMobileOpen(false)}
+                className="flex min-h-[44px] items-center rounded-2xl px-4 text-sm font-semibold text-slate-700 transition hover:bg-brand-50 hover:text-brand-800"
               >
                 {item.label}
               </a>
             ))}
-            <div className="pt-3 border-t border-neutral-100">
-              <a href={storefrontUrl} className="block w-full">
-                <Button variant="default" size="default" className="w-full justify-center gap-2 mb-2">
-                  <ShoppingCart className="w-4 h-4" />
-                  Start Shopping
-                </Button>
+            <div className="grid gap-2 border-t border-brand-900/10 pt-3 sm:grid-cols-2">
+              <a href={`tel:${businessInfo.phone.replace(/\s/g, "")}`} className="btn-secondary">
+                <PhoneCall className="h-4 w-4" aria-hidden /> Call the store
               </a>
-              <a href={`tel:${businessInfo.phone}`} className="block w-full">
-                <Button variant="outline" size="default" className="w-full justify-center gap-2">
-                  <PhoneCall className="w-4 h-4" />
-                  Call Us
-                </Button>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
+                <MessageCircle className="h-4 w-4" aria-hidden /> WhatsApp
               </a>
             </div>
           </div>

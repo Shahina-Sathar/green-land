@@ -1,5 +1,8 @@
 {
-  "name": "green-land-super-market",
+  // Must stay "green-land": that is the Worker the custom domain
+  // greenland.millx.in is attached to. Deploying under any other name
+  // publishes to a Worker nobody visits.
+  "name": "green-land",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-12-18",
   "compatibility_flags": ["nodejs_compat"],

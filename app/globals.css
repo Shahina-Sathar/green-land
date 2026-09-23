@@ -2,29 +2,153 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   Shared with the shopping app (cart.greenland.millx.in) so the website and
+   the store read as one brand. Greens are sampled from the Greenland logo
+   (forest #1E5D38, leaf #82B142); the accent is a warm mango used for offers
+   and primary calls to action. Colours are RGB channels so Tailwind opacity
+   modifiers keep working. */
+:root {
+  --brand-50: 241 248 236;
+  --brand-100: 222 239 210;
+  --brand-200: 191 224 168;
+  --brand-300: 157 203 116;
+  --brand-400: 130 177 66; /* logo leaf */
+  --brand-500: 78 150 58;
+  --brand-600: 44 118 56;
+  --brand-700: 30 93 56; /* logo forest */
+  --brand-800: 23 74 45;
+  --brand-900: 16 56 34;
+  --brand-950: 10 38 22;
+
+  --accent-50: 255 248 235;
+  --accent-100: 254 236 200;
+  --accent-200: 253 217 140;
+  --accent-300: 253 196 84;
+  --accent-400: 251 176 43;
+  --accent-500: 245 150 11;
+  --accent-600: 217 115 6;
+  --accent-700: 180 83 9;
+  --accent-800: 146 64 14;
+  --accent-900: 120 53 15;
+
+  --cream: 251 250 246;
+  --ink: 22 33 27;
+
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgb(16 56 34 / 0.05), 0 2px 8px -2px rgb(16 56 34 / 0.08);
+  --shadow-soft: 0 4px 14px -4px rgb(16 56 34 / 0.18);
+  --shadow-lift: 0 18px 40px -14px rgb(16 56 34 / 0.28);
+  --shadow-glow: 0 10px 30px -8px rgb(245 150 11 / 0.55);
+
+  --page-max: 76rem;
+  --header-h: 4.5rem;
+}
 
 @layer base {
   html {
+    -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
   }
-
   body {
-    @apply bg-white text-neutral-800 antialiased;
-    font-family: "Inter", system-ui, sans-serif;
+    @apply bg-cream font-sans text-ink antialiased;
+    overflow-x: hidden;
   }
-
+  h1,
+  h2,
+  h3 {
+    @apply text-ink;
+    text-wrap: balance;
+  }
   ::selection {
-    @apply bg-brand-100 text-brand-900;
+    @apply bg-brand-200 text-brand-900;
+  }
+  :focus-visible {
+    outline: 3px solid rgb(var(--brand-400));
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+  img {
+    max-width: 100%;
   }
 }
 
 @layer components {
-  .section-padding {
-    @apply px-4 py-16 sm:px-6 md:py-24 lg:px-8;
+  .page {
+    @apply mx-auto w-full max-w-page px-4 sm:px-6 lg:px-8;
   }
 
-  .container-max {
-    @apply mx-auto max-w-7xl;
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-pill px-6 py-3 text-sm font-bold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-brand-700 text-white shadow-soft hover:bg-brand-800 hover:shadow-lift;
+  }
+  .btn-accent {
+    @apply btn bg-accent-400 text-brand-950 shadow-glow hover:-translate-y-0.5 hover:bg-accent-300;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-brand-800 ring-1 ring-brand-100 hover:bg-brand-50;
+  }
+  .btn-ghost-light {
+    @apply btn bg-white/10 text-white ring-1 ring-white/30 backdrop-blur hover:bg-white/20;
+  }
+  .btn-whatsapp {
+    @apply btn bg-[#0F7A3F] text-white shadow-soft hover:bg-[#0B6433];
+  }
+
+  .card {
+    @apply rounded-card bg-white shadow-card ring-1 ring-brand-900/5;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-brand-600;
+  }
+  .section-title {
+    @apply font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl;
+  }
+  .section-sub {
+    @apply mt-3 max-w-2xl text-base leading-relaxed text-slate-600;
+  }
+
+  .section-padding {
+    @apply py-14 sm:py-20;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, rgb(var(--brand-300)), rgb(var(--accent-300)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

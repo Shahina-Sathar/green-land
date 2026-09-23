@@ -1,78 +1,97 @@
-"use client";
+import { ArrowRight } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { SectionWrapper } from "./section-wrapper";
+import { Reveal } from "@/components/ui/reveal";
+import { ShopLink } from "@/components/ui/shop-link";
+import { formatHoursRange } from "@/lib/hours";
+import type { Product, StorefrontStore } from "@/lib/store-api";
 
-export function About() {
+export function About({
+  store,
+  categoryCount,
+  productCount,
+  collage,
+}: {
+  store: StorefrontStore | null;
+  categoryCount: number;
+  productCount: number;
+  /** Four real product photos, used in place of a store photograph. */
+  collage: Product[];
+}) {
+  // Only figures we can actually stand behind, read from the live store.
+  const facts = [
+    categoryCount > 0 && { value: String(categoryCount), label: "Aisles to browse" },
+    productCount > 0 && { value: `${productCount}`, label: "Products online" },
+    store && { value: formatHoursRange(store.open_hour, store.close_hour), label: "Open daily" },
+    { value: "UPI", label: "Pay on your phone" },
+  ].filter(Boolean) as Array<{ value: string; label: string }>;
+
   return (
-    <SectionWrapper id="about" bg="white">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="relative">
-            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
-              <div className="w-full h-full bg-brand-100 flex items-center justify-center">
-                <span className="text-8xl">🛒</span>
-              </div>
+    <section id="about" aria-labelledby="about-title" className="page section-padding">
+      <div className="grid items-center gap-8 overflow-hidden rounded-[2rem] bg-brand-900 p-6 text-white sm:p-10 lg:grid-cols-2 lg:gap-14 lg:p-14">
+        <Reveal className={collage.length >= 4 ? "" : "hidden lg:block"}>
+          {collage.length >= 4 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {collage.slice(0, 4).map((p, i) => (
+                <div
+                  key={p.id}
+                  className={`aspect-square overflow-hidden rounded-2xl bg-brand-800 ring-1 ring-white/10 ${
+                    i % 3 === 0 ? "rounded-tl-[2.5rem]" : ""
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.image_url!}
+                    alt={p.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
-            <div className="absolute -bottom-4 -right-4 w-full h-full rounded-3xl bg-brand-200/30 -z-10" />
-          </div>
-        </motion.div>
+          ) : (
+            <div className="aspect-[4/3] rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 ring-1 ring-white/10" />
+          )}
+        </Reveal>
 
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="text-brand-600 font-semibold text-sm uppercase tracking-wider">
-            About Us
-          </span>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-neutral-900 tracking-tight">
-            Your Friendly Neighborhood
-            <br />
-            <span className="text-brand-700">Supermarket</span>
+        <Reveal>
+          <p className="eyebrow text-brand-300">
+            <span className="h-px w-6 bg-brand-300" aria-hidden /> About us
+          </p>
+          <h2 id="about-title" className="section-title mt-2 text-white">
+            The shop around the corner, on your phone
           </h2>
-          <p className="mt-6 text-neutral-600 leading-relaxed text-lg">
-            At <strong>Green Land Super Market</strong>, we believe grocery shopping
-            should be a delightful experience. For years, we have been serving our
-            community with the freshest produce, finest groceries, and everyday
-            essentials.
+
+          <p className="mt-4 text-base leading-relaxed text-brand-50/85">
+            Greenland Supermarket is a neighbourhood shop in Padanilam, near the Valappil petrol pump.
+            We stock the everyday list — fruit and vegetables, dairy, meat and fish, rice and staples,
+            snacks, and the cleaning and personal-care things that run out without warning.
           </p>
-          <p className="mt-4 text-neutral-600 leading-relaxed">
-            We carefully select every product on our shelves, partner with trusted
-            brands, and maintain the highest standards of quality and cleanliness. Our
-            friendly team is always ready to help with a warm smile, making every visit
-            a pleasant one.
-          </p>
-          <p className="mt-4 text-neutral-600 leading-relaxed">
-            As a proud locally-owned business, we are deeply committed to our community.
-            Shopping at Green Land means supporting a business that cares about its
-            neighbors and strives to make a positive impact every day.
+          <p className="mt-4 text-base leading-relaxed text-brand-50/85">
+            The same shelves are online. Browse the aisles, add what you need and pay with UPI, and we
+            will bring it to your door. Not sure whether we carry something? Send us a WhatsApp message
+            and we will check for you.
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-4">
-            {[
-              { value: "1000+", label: "Products" },
-              { value: "10+", label: "Years Experience" },
-              { value: "5000+", label: "Happy Customers" },
-              { value: "50+", label: "Trusted Brands" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-brand-50 rounded-2xl p-4 text-center"
-              >
-                <p className="text-2xl font-bold text-brand-700">{stat.value}</p>
-                <p className="text-sm text-brand-600 mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+          {facts.length > 0 && (
+            <dl className="mt-8 grid grid-cols-2 gap-3">
+              {facts.map((fact) => (
+                <div key={fact.label} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
+                  <dt className="sr-only">{fact.label}</dt>
+                  <dd>
+                    <p className="font-display text-xl font-semibold text-accent-300">{fact.value}</p>
+                    <p className="mt-1 text-sm text-brand-100/80">{fact.label}</p>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          <ShopLink className="btn-accent mt-8">
+            Start shopping <ArrowRight className="h-4 w-4" aria-hidden />
+          </ShopLink>
+        </Reveal>
       </div>
-    </SectionWrapper>
+    </section>
   );
 }
