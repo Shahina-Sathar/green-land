@@ -6,9 +6,11 @@ export function formatINR(value: number | string): string {
 }
 
 /**
- * True when the product has its own photo rather than the generic stock images
- * (Wikimedia) seeded for the WhatsApp catalog. Used to show only real photos.
+ * True only for photographs taken in the shop, which live under /products/ in
+ * the store's bucket. Generic stock imagery is served from /stock/ and hot-linked
+ * Wikimedia files are elsewhere again — neither may be presented on this site as
+ * a picture of these shelves, so both are excluded here.
  */
 export function hasOwnPhoto(imageUrl: string | null | undefined): boolean {
-  return !!imageUrl && !imageUrl.includes("wikimedia.org");
+  return !!imageUrl && imageUrl.includes("/greenland-logo/products/");
 }
